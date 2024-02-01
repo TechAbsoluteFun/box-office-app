@@ -1,33 +1,23 @@
 import { useState } from 'react';
 import { searchForShows, searchForPeople } from './../api/tvmaze';
+import SearchForm from '../components/SearchForm';
 
 const Home = () => {
-  const [searchStr, setSearchStr] = useState('');
   const [apiData, setApiData] = useState(null);
   const [apiDataError, setApiDataError] = useState(null);
-  const [searchOption, setSearchOption] = useState('shows');
 
-  const onSearchInputChange = e => {
-    setSearchStr(e.target.value);
-  };
-
-  const onRadioChange = e => {
-    setSearchOption(e.target.value);
-  };
-
-  const onSearch = async e => {
-    e.preventDefault();
-
+  const onSearch = async ({ q, searchOption }) => {
     try {
       setApiDataError(null);
 
+      let result;
+
       if (searchOption === 'shows') {
-        const result = await searchForShows(searchStr);
-        setApiData(result);
+        result = await searchForShows(q);
       } else {
-        const result = await searchForPeople(searchStr);
-        setApiData(result);
+        result = await searchForPeople(q);
       }
+      setApiData(result);
     } catch (error) {
       setApiDataError(error);
     }
@@ -51,7 +41,8 @@ const Home = () => {
 
   return (
     <div>
-      <form onSubmit={onSearch}>
+      <SearchForm onSearch={onSearch} />
+      {/* <form onSubmit={onSearch}>
         <input type="text" value={searchStr} onChange={onSearchInputChange} />
 
         <label>
@@ -77,7 +68,7 @@ const Home = () => {
         </label>
 
         <button type="submit">Search</button>
-      </form>
+      </form> */}
       <div>{renderApiData()}</div>
     </div>
   );
